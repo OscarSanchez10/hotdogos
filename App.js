@@ -14,7 +14,7 @@ const hotDogs = [
   { name: 'Hot Dog Con Bacon', price: '$50' },
   { name: 'Hot Dog Con Guacamole', price: '$60' },
   { name: 'Hot Dog Vegetariano', price: '$200' },
-  { name: 'Papas', price: '20' },
+  { name: 'Papas', price: '40' },
 ];
 
 // Define la pantalla principal
