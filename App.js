@@ -11,6 +11,7 @@ import DiasScreen from './Dias'; // No es necesario agregar la extensión .js
 // Arreglo de hot dogs y precios
 const hotDogs = [
   { name: 'Hot Dog Clásico', price: '$35' },
+  { name: 'Hot Dog Perzo', price: '$45' },
   { name: 'Hot Dog Con Bacon', price: '$50' },
   { name: 'Hot Dog Con Guacamole', price: '$60' },
   { name: 'Hot Dog Vegetariano', price: '$200' },
