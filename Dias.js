@@ -1,17 +1,27 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // Importa useNavigation
 
 const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
 function DiasScreen() {
+  const navigation = useNavigation(); // Obtiene el objeto de navegación
+
+  const navigateToVendidos = () => {
+    navigation.navigate('Vendidos'); // Navega a la pantalla 'Vendidos'
+  };
+
   return (
     <ImageBackground source={require('./assets/fondodias.jpg')} style={styles.backgroundImage}>
       <View style={styles.container}>
         {daysOfWeek.map((day, index) => (
-          <TouchableOpacity style={styles.button} key={index}>
+          <TouchableOpacity style={styles.button} key={index} onPress={navigateToVendidos}>
             <Text style={styles.buttonText}>{day}</Text>
           </TouchableOpacity>
         ))}
+        <TouchableOpacity style={styles.button} onPress={navigateToVendidos}>
+          <Text style={styles.buttonText}>Ventas</Text>
+        </TouchableOpacity>
       </View>
     </ImageBackground>
   );
@@ -20,8 +30,8 @@ function DiasScreen() {
 const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
-    resizeMode: 'cover', // Ajusta la imagen al tamaño del contenedor
-    justifyContent: 'center', // Centra contenido verticalmente
+    resizeMode: 'cover',
+    justifyContent: 'center',
   },
   container: {
     flex: 1,
@@ -35,17 +45,7 @@ const styles = StyleSheet.create({
     width: 150,
     alignItems: 'center',
     borderRadius: 10,
-    ...Platform.select({
-      android: {
-        elevation: 5,
-      },
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-      },
-    }),
+    
   },
   buttonText: {
     color: 'white',
@@ -54,3 +54,4 @@ const styles = StyleSheet.create({
 });
 
 export default DiasScreen;
+

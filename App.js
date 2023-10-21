@@ -1,93 +1,119 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StatusBar, Image } from 'react-native';
-import {StyleSheet,Text,View,ScrollView,TouchableOpacity,
-} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts } from 'expo-font';
 import { FredokaOne_400Regular } from '@expo-google-fonts/fredoka-one';
-import DiasScreen from './Dias'; // No es necesario agregar la extensión .js
+import DiasScreen from './Dias';
+import VendidosScreen from './Vendidos';
 
-// Arreglo de hot dogs y precios
 const hotDogs = [
   { name: 'Hot Dog Clásico', price: '$35' },
   { name: 'Hot Dog Perzo', price: '$45' },
   { name: 'Hot Dog Con Bacon', price: '$50' },
   { name: 'Hot Dog Con Guacamole', price: '$60' },
-  { name: 'Hot Dog Vegetariano', price: '$200' },
+  { name: 'Hot Dog Vegetariano', price: '$50' },
   { name: 'Papas', price: '40' },
 ];
 
-// Define la pantalla principal
 function HomeScreen({ navigation }) {
   const [fontsLoaded] = useFonts({
     'FredokaOne-Regular': FredokaOne_400Regular,
   });
 
+  const [ventas, setVentas] = useState({});
+
   if (!fontsLoaded) {
-    // Puedes manejar la lógica de carga de fuentes aquí si es necesario
     return null;
   }
 
-  return (
-    <View style={styles.container}>
-      {/* Agrega la imagen en la esquina superior derecha */}
-      <Image
-        source={require('./assets/LogoHot.png')} // Ajusta la ruta de la imagen
-        style={styles.imageStyle}
-      />
+  const handleVenta = (producto) => {
+    const nombreDia = new Date().toLocaleDateString('es-ES', { weekday: 'long' });
+    const fecha = new Date().toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
 
-      <View style={styles.headerContainer}>
-        <Text
-          style={[
-            styles.menuText,
-            {
-              fontFamily: 'FredokaOne-Regular',
-              fontSize: 50,
-              color: '#8c5c4c',
-            },
-          ]}
-        >
-          MENU
-        </Text>
-        <Text
-          style={[
-            styles.hotDogsText,
-            {
-              fontFamily: 'FredokaOne-Regular',
-              fontSize: 50,
-              color: '#8c5c4c',
-            },
-          ]}
-        >
-          HOT DOG
-        </Text>
+    setVentas((prevVentas) => {
+      const newVentas = { ...prevVentas };
+      if (!newVentas[nombreDia]) {
+        newVentas[nombreDia] = { fecha, productos: {} };
+      }
+      newVentas[nombreDia].productos[producto] = (newVentas[nombreDia].productos[producto] || 0) + 1;
+
+      return newVentas;
+    });
+  };
+
+  return (
+    <>
+      <View style={styles.container}>
+        <Image
+          source={require('./assets/LogoHot.png')}
+          style={styles.imageStyle}
+        />
+
+        <View style={styles.headerContainer}>
+          <Text
+            style={[
+              styles.menuText,
+              {
+                fontFamily: 'FredokaOne-Regular',
+                fontSize: 50,
+                color: '#8c5c4c',
+              },
+            ]}
+          >
+            MENU
+          </Text>
+          <Text
+            style={[
+              styles.hotDogsText,
+              {
+                fontFamily: 'FredokaOne-Regular',
+                fontSize: 50,
+                color: '#8c5c4c',
+              },
+            ]}
+          >
+            HOT DOG
+          </Text>
+        </View>
+        <View style={styles.leftAlignContainer}>
+          <ScrollView
+            contentContainerStyle={styles.contentContainer}
+            scrollEnabled={false}
+          >
+            {hotDogs.map((hotDog, index) => (
+              <TouchableOpacity
+                style={styles.hotDogItem}
+                key={index}
+                onPress={() => {
+                  console.log(`Tocaste el hot dog: ${hotDog.name}`);
+                  handleVenta(hotDog.name);
+                }}
+              >
+                <Text style={styles.hotDogName}>{hotDog.name}</Text>
+                <Text style={styles.hotDogPrice}>{hotDog.price}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+        <StatusBar style="auto" />
+        <View style={styles.bottomButton}>
+          <TouchableOpacity onPress={() => navigation.navigate('Dias')}>
+            <Text style={styles.bottomButtonText}>Dias</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.bottomButton}>
+          <TouchableOpacity onPress={() => navigation.navigate('Vendidos', { ventas })}>
+            <Text style={styles.bottomButtonText}>Ventas</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={styles.leftAlignContainer}>
-        <ScrollView
-          contentContainerStyle={styles.contentContainer}
-          scrollEnabled={false}
-        >
-          {hotDogs.map((hotDog, index) => (
-            <TouchableOpacity
-              style={styles.hotDogItem}
-              key={index}
-              onPress={() => console.log(`Tocaste el hot dog: ${hotDog.name}`)}
-            >
-              <Text style={styles.hotDogName}>{hotDog.name}</Text>
-              <Text style={styles.hotDogPrice}>{hotDog.price}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-      <StatusBar style='auto' />
-      {/* Agrega un botón en la esquina inferior izquierda */}
-      <View style={styles.bottomButton}>
-        <TouchableOpacity onPress={() => navigation.navigate('Dias')}>
-          <Text style={styles.bottomButtonText}>Dias</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </>
   );
 }
 
@@ -98,19 +124,27 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name='Menu'
+          name="Menu"
           component={HomeScreen}
           options={{
-            headerStyle: { backgroundColor: '#fcf4d4' }, // Color de la barra de menú
+            headerStyle: { backgroundColor: '#fcf4d4' },
           }}
         />
-        {/* Agrega la pantalla "Dias" aquí */}
         <Stack.Screen
-          name='Dias'
+          name="Dias"
           component={DiasScreen}
           options={{
-            headerStyle: { backgroundColor: '#fcf4d4' }, // Puedes personalizar el estilo del encabezado
-            title: 'Dias', // Puedes cambiar el título del encabezado
+            headerStyle: { backgroundColor: '#fcf4d4' },
+            title: 'Dias',
+          }}
+        />
+        <Stack.Screen
+          name="Vendidos"
+          component={VendidosScreen}
+          initialParams={{ ventas: {} }}
+          options={{
+            headerStyle: { backgroundColor: '#fcf4d4' },
+            title: 'Ventas',
           }}
         />
       </Stack.Navigator>
@@ -126,19 +160,19 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     marginTop: 30,
-    alignItems: 'flex-start', // Alinea los textos a la izquierda
-    paddingHorizontal: 20, // Añade un espacio a la izquierda para separar del borde
-    width: '100%', // Ocupa todo el ancho disponible
+    alignItems: 'flex-start',
+    paddingHorizontal: 20,
+    width: '100%',
   },
   contentContainer: {
     marginTop: 60,
     justifyContent: 'center',
-    alignItems: 'flex-start', // Alinea los botones a la izquierda
+    alignItems: 'flex-start',
   },
   leftAlignContainer: {
-    alignItems: 'flex-start', // Alinea todo el contenido a la izquierda
-    paddingHorizontal: 20, // Añade un espacio a la izquierda para separar del borde
-    width: '100%', // Ocupa todo el ancho disponible
+    alignItems: 'flex-start',
+    paddingHorizontal: 20,
+    width: '100%',
   },
   hotDogItem: {
     flexDirection: 'row',
@@ -147,7 +181,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 3,
     borderBottomColor: '#ccc',
-    width: '70%', // Ajusta el ancho de los botones
+    width: '70%',
     backgroundColor: 'white',
     borderRadius: 10,
     marginVertical: 10,
@@ -165,27 +199,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
-  // Agrega un estilo para la imagen
   imageStyle: {
     position: 'absolute',
-    top: 50, // Ajusta la posición vertical
-    right: 0, // Ajusta la posición horizontal
-    width: 150, // Ajusta el ancho de la imagen
-    height: 100, // Ajusta la altura de la imagen
+    top: 50,
+    right: 0,
+    width: 150,
+    height: 100,
   },
-  // Estilos para el botón en la esquina inferior derecha
   bottomButton: {
     backgroundColor: 'red',
     padding: 10,
-    width: 70,
+    width: 80,
     alignItems: 'center',
     position: 'absolute',
-    bottom: 30, // Ajusta este valor para elevar el botón
+    bottom: 40,
     right: 25,
     borderRadius: 10,
   },
   bottomButtonText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 20
   },
 });
