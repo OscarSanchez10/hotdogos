@@ -7,6 +7,8 @@ import { useFonts } from 'expo-font';
 import { FredokaOne_400Regular } from '@expo-google-fonts/fredoka-one';
 import DiasScreen from './Dias';
 import VendidosScreen from './Vendidos';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const hotDogs = [
   { name: 'Hot Dog Clásico', price: '$35' },
@@ -108,9 +110,10 @@ function HomeScreen({ navigation }) {
           </TouchableOpacity>
         </View>
         <View style={styles.bottomButton}>
-          <TouchableOpacity onPress={() => navigation.navigate('Vendidos', { ventas })}>
+          <TouchableOpacity onPress={() => navigation.navigate('Vendidos', { ventas, setVentas })}>
             <Text style={styles.bottomButtonText}>Ventas</Text>
           </TouchableOpacity>
+
         </View>
       </View>
     </>
